@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import fetchMenu from "./fetchMenu";
+import Menu from './components/menu';
 
 // Changes XML to JSON
 function xmlToJson(xml: any) {
@@ -53,7 +54,15 @@ const translateDay = [
 export default function Index() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [menu, setMenu] = useState<string[]>([]);
+	const [weekend, setWeekend] = useState<boolean>(false);
 	useEffect(() => {
+		if (
+			new Date(Date.now()).getDay() === 6 ||
+			new Date(Date.now()).getDay() === 1
+		) {
+			setWeekend(true);
+			return;
+		}
 		try {
 			fetchMenu()
 				.then((res) => {
@@ -75,48 +84,6 @@ export default function Index() {
 		}
 	}, []);
 	return (
-		<>
-			<h1>Au menu du jour:</h1>
-			{
-				loading ? <>Loading...</>
-					: (
-						<div className="flex-horizontal">
-							<div>
-								<h2>Menu fourchette verte</h2>
-								{
-									(() => {
-										let result = menu[0]?.split("\n");
-										if (!result) {
-											return <>Loading...</>;
-										}
-										let returnVal = result.map(v => {
-											return <>{v}<br /></>;
-										});
-										console.dir(returnVal);
-										return returnVal;
-									})()
-								}
-							</div>
-							<hr />
-							<div>
-								<h2>Menu Hit</h2>
-								{
-									(() => {
-										let result = menu[1]?.split("\n");
-										if (!result) {
-											return <></>;
-										}
-										let returnVal = result.map(v => {
-											return <>{v}<br /></>;
-										});
-										console.dir(returnVal);
-										return returnVal;
-									})()
-								}
-							</div>
-						</div>
-					)
-			}
-		</>
+		<Menu weekend={weekend} menu={menu} loading={loading} />
 	);
 }
