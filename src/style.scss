@@ -15,6 +15,17 @@
   }
 
   body {
+    .react-calendar {
+      @media (prefers-color-scheme: dark) {
+        background-color: $dark-bg;
+        button {
+          color: white;
+          &.react-calendar__tile--now {
+            background-color: $green;
+          }
+        }
+      }
+    }
     hr {
       border: none;
       border-bottom: solid 1px white;

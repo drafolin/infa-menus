@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import fetchMenu from "./fetchMenu";
 import Menu from './components/menu';
+import { useParams } from "react-router-dom";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
 
 // Changes XML to JSON
 function xmlToJson(xml: any) {
@@ -52,24 +55,30 @@ const translateDay = [
 
 
 export default function Index() {
+	const [date, setDate] = useState<Date>(new Date(useParams().date || Date.now()));
 	const [loading, setLoading] = useState<boolean>(true);
 	const [menu, setMenu] = useState<string[]>([]);
 	const [weekend, setWeekend] = useState<boolean>(false);
 	useEffect(() => {
+		console.log(date?.getDay());
 		if (
-			new Date(Date.now()).getDay() === 6 ||
-			new Date(Date.now()).getDay() === 1
+			date.getDay() === 6 ||
+			date.getDay() === 0
 		) {
 			setWeekend(true);
+			console.log(true);
 			return;
+		} else {
+			setWeekend(false);
+			console.log(false);
 		}
 		try {
-			fetchMenu()
+			fetchMenu(date)
 				.then((res) => {
 					const parser = new DOMParser;
 					let menuObject = xmlToJson(parser.parseFromString(res, "application/xml"));
 					let menus = menuObject?.Semaines.Semaine1.Jours[
-						translateDay[new Date(Date.now()).getDay()]
+						translateDay[date.getDay()]
 					].Menus || {};
 					let result = [
 						menus.Menu1.CorpsFr["#text"].root,
@@ -82,8 +91,18 @@ export default function Index() {
 		} catch (e: any) {
 			alert(e);
 		}
-	}, []);
+	}, [date]);
 	return (
-		<Menu weekend={weekend} menu={menu} loading={loading} />
+		<>
+			<Menu weekend={weekend} menu={menu} loading={loading} title={
+				date === undefined || (
+					date?.getFullYear() === new Date(Date.now()).getFullYear() &&
+					date?.getMonth() === new Date(Date.now()).getMonth() &&
+					date?.getDate() === new Date(Date.now()).getDate()) ?
+					undefined :
+					`Plat du ${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
+			} />
+			<Calendar onChange={setDate} value={date} />
+		</>
 	);
 }

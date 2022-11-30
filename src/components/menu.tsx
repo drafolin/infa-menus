@@ -1,4 +1,4 @@
-const Menu = (props: { weekend: boolean, loading: boolean, menu: string[]; }) => {
+const Menu = (props: { weekend: boolean, loading: boolean, menu: string[], title?: string; }) => {
 	return (
 		<>
 			{
@@ -8,7 +8,7 @@ const Menu = (props: { weekend: boolean, loading: boolean, menu: string[]; }) =>
 					</>
 				) : (
 					<>
-						<h1>Au menu du jour:</h1>
+						<h1>{props.title || "Au menu du jour:"}</h1>
 						{
 							props.loading ? <>Loading...</>
 								: (
@@ -21,7 +21,6 @@ const Menu = (props: { weekend: boolean, loading: boolean, menu: string[]; }) =>
 													let returnVal = result.map(v => {
 														return <>{v}<br /></>;
 													});
-													console.dir(returnVal);
 													return returnVal;
 												})()
 											}
@@ -38,7 +37,6 @@ const Menu = (props: { weekend: boolean, loading: boolean, menu: string[]; }) =>
 													let returnVal = result.map(v => {
 														return <>{v}<br /></>;
 													});
-													console.dir(returnVal);
 													return returnVal;
 												})()
 											}

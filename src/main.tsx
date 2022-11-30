@@ -13,6 +13,10 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				element: <Index />
+			},
+			{
+				path: "/:date",
+				element: <Index />
 			}
 		]
 	}
