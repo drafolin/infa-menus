@@ -97,6 +97,7 @@ export default function Index() {
 									})()
 								}
 							</div>
+							<hr />
 							<div>
 								<h2>Menu Hit</h2>
 								{
