@@ -82,6 +82,7 @@ export default function Index() {
 					: (
 						<div className="flex-horizontal">
 							<div>
+								<h2>Menu fourchette verte</h2>
 								{
 									(() => {
 										let result = menu[0]?.split("\n");
@@ -97,6 +98,7 @@ export default function Index() {
 								}
 							</div>
 							<div>
+								<h2>Menu Hit</h2>
 								{
 									(() => {
 										let result = menu[1]?.split("\n");
