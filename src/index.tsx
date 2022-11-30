@@ -106,7 +106,9 @@ export default function Index() {
 					undefined :
 					`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
 			} />
-			<Calendar onChange={setDate} value={date} />
+			<div className="center">
+				<Calendar onChange={setDate} value={date} />
+			</div>
 		</>
 	);
 }

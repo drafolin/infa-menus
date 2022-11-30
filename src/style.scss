@@ -15,14 +15,23 @@
   }
 
   body {
+    .center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .react-calendar {
+      margin-top: 5rem;
+
+      .react-calendar__tile--now {
+        background-color: $green;
+      }
+
       @media (prefers-color-scheme: dark) {
         background-color: $dark-bg;
         button {
           color: white;
-          &.react-calendar__tile--now {
-            background-color: $green;
-          }
         }
       }
     }
