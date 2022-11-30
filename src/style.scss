@@ -1,11 +1,31 @@
-body {
-  .flex-horizontal {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
+:root {
+  font-family: /*'Bahnschrift',*/ "Helvetica", "Roboto", "Segoe UI", Tahoma,
+    Geneva, Verdana, sans-serif;
 
-    @media screen and (min-width: 500px) {
-      flex-direction: row;
+  font-size: larger;
+  background-color: white;
+  color: black;
+  @media (prefers-color-scheme: dark) {
+    background-color: #0f172a;
+    color: white;
+  }
+
+  body {
+    .flex-horizontal {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+
+      > :not(:last-child) {
+        margin-bottom: 3rem;
+      }
+
+      @media screen and (min-width: 500px) {
+        flex-direction: row;
+        > :not(:last-child) {
+          margin-bottom: unset;
+        }
+      }
     }
   }
 }

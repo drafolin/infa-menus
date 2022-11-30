@@ -51,6 +51,7 @@ const translateDay = [
 
 
 export default function Index() {
+	const [loading, setLoading] = useState<boolean>(true);
 	const [menu, setMenu] = useState<string[]>([]);
 	useEffect(() => {
 		try {
@@ -66,45 +67,53 @@ export default function Index() {
 						menus.Menu2.CorpsFr["#text"].root
 					];
 					setMenu(result);
+					setLoading(false);
 				});
+			setLoading(true);
 		} catch (e: any) {
 			alert(e);
 		}
 	}, []);
 	return (
 		<>
-			<div className="flex-horizontal">
-				<div>
-					{
-						(() => {
-							let result = menu[0]?.split("\n");
-							if (!result) {
-								return <></>;
-							}
-							let returnVal = result.map(v => {
-								return <>{v}<br /></>;
-							});
-							console.dir(returnVal);
-							return returnVal;
-						})()
-					}
-				</div>
-				<div>
-					{
-						(() => {
-							let result = menu[1]?.split("\n");
-							if (!result) {
-								return <></>;
-							}
-							let returnVal = result.map(v => {
-								return <>{v}<br /></>;
-							});
-							console.dir(returnVal);
-							return returnVal;
-						})()
-					}
-				</div>
-			</div>
+			<h1>Au menu du jour:</h1>
+			{
+				loading ? <>Loading...</>
+					: (
+						<div className="flex-horizontal">
+							<div>
+								{
+									(() => {
+										let result = menu[0]?.split("\n");
+										if (!result) {
+											return <>Loading...</>;
+										}
+										let returnVal = result.map(v => {
+											return <>{v}<br /></>;
+										});
+										console.dir(returnVal);
+										return returnVal;
+									})()
+								}
+							</div>
+							<div>
+								{
+									(() => {
+										let result = menu[1]?.split("\n");
+										if (!result) {
+											return <></>;
+										}
+										let returnVal = result.map(v => {
+											return <>{v}<br /></>;
+										});
+										console.dir(returnVal);
+										return returnVal;
+									})()
+								}
+							</div>
+						</div>
+					)
+			}
 		</>
 	);
 }
