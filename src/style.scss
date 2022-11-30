@@ -1,29 +1,58 @@
 :root {
+  $green: #80ba27;
+  $dark-bg: #0f172a;
+
   font-family: /*'Bahnschrift',*/ "Helvetica", "Roboto", "Segoe UI", Tahoma,
     Geneva, Verdana, sans-serif;
 
   font-size: larger;
   background-color: white;
   color: black;
+  box-sizing: border-box;
   @media (prefers-color-scheme: dark) {
-    background-color: #0f172a;
+    background-color: $dark-bg;
     color: white;
   }
 
   body {
+    .react-calendar {
+      @media (prefers-color-scheme: dark) {
+        background-color: $dark-bg;
+        button {
+          color: white;
+          &.react-calendar__tile--now {
+            background-color: $green;
+          }
+        }
+      }
+    }
+    hr {
+      border: none;
+      border-bottom: solid 1px white;
+      margin: auto;
+      width: 85%;
+    }
+
     .flex-horizontal {
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
 
-      > :not(:last-child) {
+      > div:not(:last-child) {
         margin-bottom: 3rem;
       }
 
-      @media screen and (min-width: 500px) {
+      @media screen and (min-width: 540px) {
         flex-direction: row;
-        > :not(:last-child) {
+        > div:not(:last-child) {
           margin-bottom: unset;
+        }
+
+        hr {
+          width: unset;
+          margin: unset;
+          border: none;
+          border-left: solid 1px white;
         }
       }
     }

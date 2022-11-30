@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import fetchMenu from "./fetchMenu";
+import Menu from './components/menu';
+import { useParams } from "react-router-dom";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
 
 // Changes XML to JSON
 function xmlToJson(xml: any) {
@@ -51,16 +55,34 @@ const translateDay = [
 
 
 export default function Index() {
+	let dateComponents = useParams().date?.split('-');
+	if (useParams().date !== undefined && dateComponents?.length || 3 < 3) {
+		window.location.href = window.location.host;
+	}
+	const [date, setDate] = useState<Date>(useParams().date ? new Date(parseInt((dateComponents || ["0", "0", "0"])[2]), parseInt((dateComponents || ["1", "1"])[1]) - 1, parseInt((dateComponents || ["0"])[0])) : new Date(Date.now()));
 	const [loading, setLoading] = useState<boolean>(true);
 	const [menu, setMenu] = useState<string[]>([]);
+	const [weekend, setWeekend] = useState<boolean>(false);
 	useEffect(() => {
+		console.log(date?.getDay());
+		if (
+			date.getDay() === 6 ||
+			date.getDay() === 0
+		) {
+			setWeekend(true);
+			console.log(true);
+			return;
+		} else {
+			setWeekend(false);
+			console.log(false);
+		}
 		try {
-			fetchMenu()
+			fetchMenu(date)
 				.then((res) => {
 					const parser = new DOMParser;
 					let menuObject = xmlToJson(parser.parseFromString(res, "application/xml"));
 					let menus = menuObject?.Semaines.Semaine1.Jours[
-						translateDay[new Date(Date.now()).getDay()]
+						translateDay[date.getDay()]
 					].Menus || {};
 					let result = [
 						menus.Menu1.CorpsFr["#text"].root,
@@ -73,47 +95,18 @@ export default function Index() {
 		} catch (e: any) {
 			alert(e);
 		}
-	}, []);
+	}, [date]);
 	return (
 		<>
-			<h1>Au menu du jour:</h1>
-			{
-				loading ? <>Loading...</>
-					: (
-						<div className="flex-horizontal">
-							<div>
-								{
-									(() => {
-										let result = menu[0]?.split("\n");
-										if (!result) {
-											return <>Loading...</>;
-										}
-										let returnVal = result.map(v => {
-											return <>{v}<br /></>;
-										});
-										console.dir(returnVal);
-										return returnVal;
-									})()
-								}
-							</div>
-							<div>
-								{
-									(() => {
-										let result = menu[1]?.split("\n");
-										if (!result) {
-											return <></>;
-										}
-										let returnVal = result.map(v => {
-											return <>{v}<br /></>;
-										});
-										console.dir(returnVal);
-										return returnVal;
-									})()
-								}
-							</div>
-						</div>
-					)
-			}
+			<Menu weekend={weekend} menu={menu} loading={loading} title={
+				date === undefined || (
+					date?.getFullYear() === new Date(Date.now()).getFullYear() &&
+					date?.getMonth() === new Date(Date.now()).getMonth() &&
+					date?.getDate() === new Date(Date.now()).getDate()) ?
+					undefined :
+					`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+			} />
+			<Calendar onChange={setDate} value={date} />
 		</>
 	);
 }
