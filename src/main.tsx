@@ -15,7 +15,7 @@ const router = createBrowserRouter([
 				element: <Index />
 			},
 			{
-				path: "/:date",
+				path: ":date",
 				element: <Index />
 			}
 		]

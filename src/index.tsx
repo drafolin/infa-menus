@@ -55,7 +55,11 @@ const translateDay = [
 
 
 export default function Index() {
-	const [date, setDate] = useState<Date>(new Date(useParams().date || Date.now()));
+	let dateComponents = useParams().date?.split('-');
+	if (useParams().date !== undefined && dateComponents?.length || 3 < 3) {
+		window.location.href = window.location.host;
+	}
+	const [date, setDate] = useState<Date>(useParams().date ? new Date(parseInt((dateComponents || ["0", "0", "0"])[2]), parseInt((dateComponents || ["1", "1"])[1]) - 1, parseInt((dateComponents || ["0"])[0])) : new Date(Date.now()));
 	const [loading, setLoading] = useState<boolean>(true);
 	const [menu, setMenu] = useState<string[]>([]);
 	const [weekend, setWeekend] = useState<boolean>(false);
@@ -100,7 +104,7 @@ export default function Index() {
 					date?.getMonth() === new Date(Date.now()).getMonth() &&
 					date?.getDate() === new Date(Date.now()).getDate()) ?
 					undefined :
-					`Plat du ${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
+					`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
 			} />
 			<Calendar onChange={setDate} value={date} />
 		</>
