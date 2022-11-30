@@ -1,0 +1,11 @@
+body {
+  .flex-horizontal {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    @media screen and (min-width: 500px) {
+      flex-direction: row;
+    }
+  }
+}
