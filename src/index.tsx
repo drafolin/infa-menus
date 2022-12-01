@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import fetchMenu from "./fetchMenu";
-import Menu from './components/menu';
 import { useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
@@ -65,8 +64,21 @@ export default function Index() {
 	}
 	const [date, setDate] = useState<Date>(useParams().date ? new Date(parseInt((dateComponents || ["0", "0", "0"])[2]), parseInt((dateComponents || ["1", "1"])[1]) - 1, parseInt((dateComponents || ["0"])[0])) : new Date(Date.now()));
 	const [loading, setLoading] = useState<boolean>(true);
-	const [menu, setMenu] = useState<string[]>([]);
+	const menu = fetchMenu(date)
+		.then((res) => {
+			const parser = new DOMParser;
+			let menuObject = xmlToJson(parser.parseFromString(res, "application/xml"));
+			let menus = menuObject?.Semaines.Semaine1.Jours[
+				translateDay[date.getDay()]
+			].Menus || {};
+			let result = [
+				menus.Menu1.CorpsFr["#text"].root as String,
+				menus.Menu2.CorpsFr["#text"].root as String
+			];
+			return result;
+		});
 	const [weekend, setWeekend] = useState<boolean>(false);
+	const Menu = lazy(() => import("./components/menu"));
 	useEffect(() => {
 		console.log(date?.getDay());
 		if (
@@ -81,20 +93,6 @@ export default function Index() {
 			console.log(false);
 		}
 		try {
-			fetchMenu(date)
-				.then((res) => {
-					const parser = new DOMParser;
-					let menuObject = xmlToJson(parser.parseFromString(res, "application/xml"));
-					let menus = menuObject?.Semaines.Semaine1.Jours[
-						translateDay[date.getDay()]
-					].Menus || {};
-					let result = [
-						menus.Menu1.CorpsFr["#text"].root,
-						menus.Menu2.CorpsFr["#text"].root
-					];
-					setMenu(result);
-					setLoading(false);
-				});
 			setLoading(true);
 		} catch (e: any) {
 			alert(e);
@@ -103,14 +101,16 @@ export default function Index() {
 	return (
 		<>
 			<main>
-				<Menu weekend={weekend} menu={menu} loading={loading} title={
-					date === undefined || (
-						date?.getFullYear() === new Date(Date.now()).getFullYear() &&
-						date?.getMonth() === new Date(Date.now()).getMonth() &&
-						date?.getDate() === new Date(Date.now()).getDate()) ?
-						undefined :
-						`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
-				} />
+				<Suspense fallback={<h1>Récupération des données... Veuillez patienter.</h1>}>
+					<Menu weekend={weekend} menu={menu} loading={loading} title={
+						date === undefined || (
+							date?.getFullYear() === new Date(Date.now()).getFullYear() &&
+							date?.getMonth() === new Date(Date.now()).getMonth() &&
+							date?.getDate() === new Date(Date.now()).getDate()) ?
+							undefined :
+							`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+					} />
+				</Suspense>
 				<div className="center">
 					<Calendar onChange={setDate} value={date} />
 				</div>
