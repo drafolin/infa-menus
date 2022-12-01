@@ -4,6 +4,10 @@ import Menu from './components/menu';
 import { useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
+import darkVercel from "./assets/Vercel/logotype/dark/vercel-logotype-dark.svg";
+import lightVercel from "./assets/Vercel/logotype/light/vercel-logotype-light.svg";
+import { useMediaPredicate } from "react-media-hook";
+import reactLogo from "./assets/reactjs_logo_icon.svg";
 
 // Changes XML to JSON
 function xmlToJson(xml: any) {
@@ -98,17 +102,40 @@ export default function Index() {
 	}, [date]);
 	return (
 		<>
-			<Menu weekend={weekend} menu={menu} loading={loading} title={
-				date === undefined || (
-					date?.getFullYear() === new Date(Date.now()).getFullYear() &&
-					date?.getMonth() === new Date(Date.now()).getMonth() &&
-					date?.getDate() === new Date(Date.now()).getDate()) ?
-					undefined :
-					`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
-			} />
-			<div className="center">
-				<Calendar onChange={setDate} value={date} />
-			</div>
+			<main>
+				<Menu weekend={weekend} menu={menu} loading={loading} title={
+					date === undefined || (
+						date?.getFullYear() === new Date(Date.now()).getFullYear() &&
+						date?.getMonth() === new Date(Date.now()).getMonth() &&
+						date?.getDate() === new Date(Date.now()).getDate()) ?
+						undefined :
+						`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+				} />
+				<div className="center">
+					<Calendar onChange={setDate} value={date} />
+				</div>
+			</main>
+
+			<footer>
+				<p>Merci à <a href="https://github.com/Tobias-Glauser">Tobias Glauser</a> pour la récupération du lien de l'api</p>
+				<p>Hébergé chez
+					<a href="https://vercel.com">
+						<img
+							src={
+								useMediaPredicate("(prefers-color-scheme: dark)") ?
+									lightVercel :
+									darkVercel
+							}
+							alt="Vercel"
+						/>
+					</a>
+					, construit avec
+					<a href="https://reactjs.com">
+						<img src={reactLogo} alt="React icon" height={"13px"} />
+						React
+					</a>.
+				</p>
+			</footer>
 		</>
 	);
 }
