@@ -15,14 +15,34 @@
   }
 
   body {
+    .menu {
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      > div {
+        width: 100%;
+      }
+    }
+    .center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .react-calendar {
+      margin-top: 5rem;
+
+      .react-calendar__tile--now {
+        background-color: $green;
+      }
+
       @media (prefers-color-scheme: dark) {
         background-color: $dark-bg;
         button {
           color: white;
-          &.react-calendar__tile--now {
-            background-color: $green;
-          }
         }
       }
     }
@@ -31,6 +51,10 @@
       border-bottom: solid 1px white;
       margin: auto;
       width: 85%;
+
+      @media (prefers-color-scheme: light) {
+        border-bottom: solid 1px black;
+      }
     }
 
     .flex-horizontal {
@@ -38,8 +62,21 @@
       flex-direction: column;
       justify-content: space-evenly;
 
-      > div:not(:last-child) {
-        margin-bottom: 3rem;
+      > div {
+        &:not(:last-child) {
+          margin-bottom: 3rem;
+        }
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        p {
+          text-align: center;
+        }
+
+        @media screen and (min-width: 540px) {
+          width: 400px;
+        }
       }
 
       @media screen and (min-width: 540px) {
@@ -50,9 +87,13 @@
 
         hr {
           width: unset;
-          margin: unset;
+          margin: 0 5rem;
           border: none;
           border-left: solid 1px white;
+
+          @media (prefers-color-scheme: light) {
+            border-left: solid 1px black;
+          }
         }
       }
     }
