@@ -17,9 +17,9 @@ const Menu = (props: { weekend: boolean, loading: boolean, menu: string[], title
 											<h2>Menu fourchette verte</h2>
 											{
 												(() => {
-													let result = props.menu[0]?.split("\n");
+													let result = props.menu[0]?.split("\n\n");
 													let returnVal = result.map(v => {
-														return <>{v}<br /></>;
+														return <p>{v}</p>;
 													});
 													return returnVal;
 												})()
@@ -30,12 +30,12 @@ const Menu = (props: { weekend: boolean, loading: boolean, menu: string[], title
 											<h2>Menu Hit</h2>
 											{
 												(() => {
-													let result = props.menu[1]?.split("\n");
+													let result = props.menu[1]?.split("\n\n");
 													if (!result) {
 														return <></>;
 													}
 													let returnVal = result.map(v => {
-														return <>{v}<br /></>;
+														return <p>{v}</p>;
 													});
 													return returnVal;
 												})()

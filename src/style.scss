@@ -62,8 +62,21 @@
       flex-direction: column;
       justify-content: space-evenly;
 
-      > div:not(:last-child) {
-        margin-bottom: 3rem;
+      > div {
+        &:not(:last-child) {
+          margin-bottom: 3rem;
+        }
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        p {
+          text-align: center;
+        }
+
+        @media screen and (min-width: 540px) {
+          width: 400px;
+        }
       }
 
       @media screen and (min-width: 540px) {
@@ -74,7 +87,7 @@
 
         hr {
           width: unset;
-          margin: unset;
+          margin: 0 5rem;
           border: none;
           border-left: solid 1px white;
 
