@@ -15,6 +15,17 @@
   }
 
   body {
+    .menu {
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      > div {
+        width: 100%;
+      }
+    }
     .center {
       display: flex;
       align-items: center;

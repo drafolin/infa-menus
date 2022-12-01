@@ -1,6 +1,6 @@
 const Menu = (props: { weekend: boolean, loading: boolean, menu: string[], title?: string; }) => {
 	return (
-		<>
+		<div className={"menu"}>
 			{
 				props.weekend ? (
 					<>
@@ -47,7 +47,7 @@ const Menu = (props: { weekend: boolean, loading: boolean, menu: string[], title
 					</>
 				)
 			}
-		</>
+		</div>
 	);
 };
 
