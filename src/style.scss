@@ -16,6 +16,11 @@
   }
 
   body {
+    a {
+      color: $green;
+      text-decoration: none;
+    }
+
     .menu {
       max-width: 800px;
       margin: auto;
@@ -105,10 +110,15 @@
       flex-direction: column;
       align-items: center;
       font-size: small;
-
       color: gray;
+
       p {
         margin: 0.5rem;
+      }
+
+      img {
+        height: 13px;
+        margin: auto auto auto 1ex;
       }
     }
   }

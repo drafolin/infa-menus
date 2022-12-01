@@ -118,7 +118,23 @@ export default function Index() {
 
 			<footer>
 				<p>Merci à <a href="https://github.com/Tobias-Glauser">Tobias Glauser</a> pour la récupération du lien de l'api</p>
-				<p>Hébergé chez <img src={useMediaPredicate("(prefers-color-scheme: dark)") ? lightVercel : darkVercel} height={"13px"} alt="Vercel" />, construit avec <img src={reactLogo} alt="React icon" height={"13px"} /> React.</p>
+				<p>Hébergé chez
+					<a href="https://vercel.com">
+						<img
+							src={
+								useMediaPredicate("(prefers-color-scheme: dark)") ?
+									lightVercel :
+									darkVercel
+							}
+							alt="Vercel"
+						/>
+					</a>
+					, construit avec
+					<a href="https://reactjs.com">
+						<img src={reactLogo} alt="React icon" height={"13px"} />
+						React
+					</a>.
+				</p>
 			</footer>
 		</>
 	);
