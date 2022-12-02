@@ -1,11 +1,20 @@
 import fetchMenu from "../fetchMenu";
 
-const Menu = (props: { weekend: boolean, title?: string, date: Date; }) => {
-	const menu = fetchMenu(props.date);
+const Menu = (props: { date: Date; }) => {
+	const title = props.date === undefined || (
+		props.date?.getFullYear() === new Date(Date.now()).getFullYear() &&
+		props.date?.getMonth() === new Date(Date.now()).getMonth() &&
+		props.date?.getDate() === new Date(Date.now()).getDate()) ?
+		"Au menu du jour:" :
+		`Plat du ${props.date.getDate()}/${props.date.getMonth() + 1}/${props.date.getFullYear()}`;
+
+	const weekend = props.date.getDay() === 6 || props.date.getDay() === 0;
+
+	const menu = weekend ? null as any : fetchMenu(props.date);
 	return (
 		<div className={"menu"}>
 			{
-				props.weekend ?
+				weekend ?
 					(
 						<>
 							<h1>Nous sommes le week-end!</h1>
@@ -14,7 +23,7 @@ const Menu = (props: { weekend: boolean, title?: string, date: Date; }) => {
 					(
 						<>
 							{menu.data && (<>
-								<h1>{props.title || "Au menu du jour:"}</h1>
+								<h1>{title}</h1>
 								<div className="flex-horizontal">
 									<div>
 										<h2>Menu fourchette verte</h2>

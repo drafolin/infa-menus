@@ -21,17 +21,6 @@ export default function Index() {
 			<main>
 				<Suspense fallback={<h1>Récupération des données... Veuillez patienter.</h1>}>
 					<Menu
-						title={
-							date === undefined || (
-								date?.getFullYear() === new Date(Date.now()).getFullYear() &&
-								date?.getMonth() === new Date(Date.now()).getMonth() &&
-								date?.getDate() === new Date(Date.now()).getDate()) ?
-								undefined :
-								`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
-						}
-						weekend={
-							(date.getDay() === 0 || date.getDay() === 6)
-						}
 						date={date}
 					/>
 				</Suspense>
