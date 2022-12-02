@@ -53,10 +53,16 @@ const translateDay = [
 function fetchMenu(): SWRResponse<String[], any>;
 function fetchMenu(date: Date | undefined): SWRResponse<String[], any>;
 function fetchMenu(dateParam?: Date | undefined) {
-	console.log("Fetching menu");
+
 	let date = dateParam || new Date(Date.now());
+	const weekend = date.getDay() === 6 || date.getDay() === 0;
+
 	const fetcher = (url: string) => fetch(url)
 		.then(async (res) => {
+			if (weekend) {
+				return [] as String[];
+			}
+
 			const txt = await res.text();
 			let path = res.url.split("/");
 			let dateStr = path[path.length - 1];

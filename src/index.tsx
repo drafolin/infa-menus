@@ -16,14 +16,21 @@ export default function Index() {
 	}
 	console.log("rerender");
 	const [date, setDate] = useState<Date>(useParams().date ? new Date(parseInt((dateComponents || ["0", "0", "0"])[2]), parseInt((dateComponents || ["1", "1"])[1]) - 1, parseInt((dateComponents || ["0"])[0])) : new Date(Date.now()));
+	const weekend = date.getDay() === 6 || date.getDay() === 0;
 	return (
 		<>
 			<main>
-				<Suspense fallback={<h1>Récupération des données... Veuillez patienter.</h1>}>
-					<Menu
-						date={date}
-					/>
-				</Suspense>
+				<div className="menu">
+					{
+						weekend ?
+							<h1>Les menus ne sont pas disponibles le week-end!</h1> :
+							<Suspense fallback={<h1>Récupération des données... Veuillez patienter.</h1>}>
+								<Menu
+									date={date}
+								/>
+							</Suspense>
+					}
+				</div>
 				<div className="center">
 					<Calendar onChange={setDate} value={date} />
 				</div>
