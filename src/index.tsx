@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import fetchMenu from "./fetchMenu";
-import Menu from './components/menu';
+import { useState, Suspense, lazy } from "react";
 import { useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
@@ -8,54 +6,7 @@ import darkVercel from "./assets/Vercel/logotype/dark/vercel-logotype-dark.svg";
 import lightVercel from "./assets/Vercel/logotype/light/vercel-logotype-light.svg";
 import { useMediaPredicate } from "react-media-hook";
 import reactLogo from "./assets/reactjs_logo_icon.svg";
-
-// Changes XML to JSON
-function xmlToJson(xml: any) {
-
-	// Create the return object
-	var obj = {} as { [index: string]: any; };
-
-	if (xml.nodeType == 1) { // element
-		// do attributes
-		if (xml.attributes.length > 0) {
-			obj["@attributes"] = {};
-			for (var j = 0; j < xml.attributes.length; j++) {
-				var attribute = xml.attributes.item(j);
-				obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
-			}
-		}
-	} else if (xml.nodeType == 3) { // text
-		obj = { root: xml.nodeValue } || { root: "" };
-	}
-
-	// do children
-	if (xml.hasChildNodes()) {
-		for (var i = 0; i < xml.childNodes.length; i++) {
-			var item = xml.childNodes.item(i);
-			var nodeName = item.nodeName;
-			if (typeof (obj[nodeName]) == "undefined") {
-				obj[nodeName] = xmlToJson(item);
-			} else {
-				if (typeof (obj[nodeName].push) == "undefined") {
-					var old = obj[nodeName];
-					obj[nodeName] = [];
-					obj[nodeName].push(old);
-				}
-				obj[nodeName].push(xmlToJson(item));
-			}
-		}
-	}
-	return obj;
-};
-
-const translateDay = [
-	"Dimanche",
-	"Lundi",
-	"Mardi",
-	"Mercredi",
-	"Jeudi",
-	"Vendredi"
-];
+const Menu = lazy(() => import("./components/menu"));
 
 
 export default function Index() {
@@ -63,54 +14,23 @@ export default function Index() {
 	if (useParams().date !== undefined && dateComponents?.length || 3 < 3) {
 		window.location.href = window.location.host;
 	}
+	console.log("rerender");
 	const [date, setDate] = useState<Date>(useParams().date ? new Date(parseInt((dateComponents || ["0", "0", "0"])[2]), parseInt((dateComponents || ["1", "1"])[1]) - 1, parseInt((dateComponents || ["0"])[0])) : new Date(Date.now()));
-	const [loading, setLoading] = useState<boolean>(true);
-	const [menu, setMenu] = useState<string[]>([]);
-	const [weekend, setWeekend] = useState<boolean>(false);
-	useEffect(() => {
-		console.log(date?.getDay());
-		if (
-			date.getDay() === 6 ||
-			date.getDay() === 0
-		) {
-			setWeekend(true);
-			console.log(true);
-			return;
-		} else {
-			setWeekend(false);
-			console.log(false);
-		}
-		try {
-			fetchMenu(date)
-				.then((res) => {
-					const parser = new DOMParser;
-					let menuObject = xmlToJson(parser.parseFromString(res, "application/xml"));
-					let menus = menuObject?.Semaines.Semaine1.Jours[
-						translateDay[date.getDay()]
-					].Menus || {};
-					let result = [
-						menus.Menu1.CorpsFr["#text"].root,
-						menus.Menu2.CorpsFr["#text"].root
-					];
-					setMenu(result);
-					setLoading(false);
-				});
-			setLoading(true);
-		} catch (e: any) {
-			alert(e);
-		}
-	}, [date]);
+	const weekend = date.getDay() === 6 || date.getDay() === 0;
 	return (
 		<>
 			<main>
-				<Menu weekend={weekend} menu={menu} loading={loading} title={
-					date === undefined || (
-						date?.getFullYear() === new Date(Date.now()).getFullYear() &&
-						date?.getMonth() === new Date(Date.now()).getMonth() &&
-						date?.getDate() === new Date(Date.now()).getDate()) ?
-						undefined :
-						`Plat du ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
-				} />
+				<div className="menu">
+					{
+						weekend ?
+							<h1>Les menus ne sont pas disponibles le week-end!</h1> :
+							<Suspense fallback={<h1>Récupération des données... Veuillez patienter.</h1>}>
+								<Menu
+									date={date}
+								/>
+							</Suspense>
+					}
+				</div>
 				<div className="center">
 					<Calendar onChange={setDate} value={date} />
 				</div>
