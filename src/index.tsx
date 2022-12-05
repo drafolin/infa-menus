@@ -7,7 +7,7 @@ const Menu = lazy(() => import("./components/menu"));
 
 export default function Index() {
 	let dateComponents = useParams().date?.split('-');
-	if (useParams().date !== undefined && dateComponents?.length || 3 < 3) {
+	if (useParams().date !== undefined && (dateComponents?.length || 3) < 3) {
 		window.location.href = window.location.host;
 	}
 	console.log("rerender");
