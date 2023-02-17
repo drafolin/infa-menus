@@ -50,9 +50,37 @@ const translateDay = [
 	"Vendredi"
 ];
 
-function fetchMenu(): SWRResponse<String[], any>;
-function fetchMenu(date: Date | undefined): SWRResponse<String[], any>;
-function fetchMenu(dateParam?: Date | undefined) {
+function fetchMenu(date?: Date): String[] {
+	let fetchDate = new Date(date || new Date(Date.now()));
+	while (fetchDate.getDay() !== 1) {
+		fetchDate.setDate(fetchDate.getDate() - 1);
+	}
+	let key = fetchDate.toDateString().split(" ").join("-");
+	let menu;
+	if (!localStorage.hasOwnProperty(key)) {
+		console.log(key);
+		menu = fetchAPI(fetchDate);
+		if (!menu.data) {
+			localStorage.setItem(key, JSON.stringify(menu));
+		}
+		menu = menu.data;
+	} else {
+		console.log(key, localStorage.getItem(key));
+		return JSON.parse(localStorage.getItem(key) || "");
+	}
+
+	let menus = menu?.Semaines.Semaine1.Jours[translateDay[(date || new Date(Date.now())).getDay()]].Menus || {};
+
+	return [
+		menus.Menu1.CorpsFr["#text"].root as String,
+		menus.Menu2.CorpsFr["#text"].root as String
+	];
+
+}
+
+function fetchAPI(): SWRResponse<{ [index: string]: any; }, any>;
+function fetchAPI(date: Date | undefined): SWRResponse<{ [index: string]: any; }, any>;
+function fetchAPI(dateParam?: Date | undefined) {
 
 	let date = dateParam || new Date(Date.now());
 	const weekend = date.getDay() === 6 || date.getDay() === 0;
@@ -72,12 +100,7 @@ function fetchMenu(dateParam?: Date | undefined) {
 			let date = new Date(americanDate);
 
 			const parser = new DOMParser;
-			let menuObject = xmlToJson(parser.parseFromString(txt, "application/xml"));
-			let menus = menuObject?.Semaines.Semaine1.Jours[translateDay[date.getDay()]].Menus || {};
-			return [
-				menus.Menu1.CorpsFr["#text"].root as String,
-				menus.Menu2.CorpsFr["#text"].root as String
-			];
+			return xmlToJson(parser.parseFromString(txt, "application/xml"));
 		});
 
 	const swr = useSWR(import.meta.env.VITE_API_URL + dateFormat(date, "dd.mm.yyyy"), fetcher, { suspense: true });
