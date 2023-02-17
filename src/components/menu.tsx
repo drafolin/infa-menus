@@ -12,6 +12,7 @@ const Menu = (props: { date: Date; }) => {
 
 	const menu = fetchMenu(props.date);
 
+	console.log(menu);
 	return (
 		<>{menu.length > 0 && (<>
 			<h1>{title}</h1>

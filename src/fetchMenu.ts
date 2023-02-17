@@ -58,15 +58,16 @@ function fetchMenu(date?: Date): String[] {
 	let key = fetchDate.toDateString().split(" ").join("-");
 	let menu;
 	if (!localStorage.hasOwnProperty(key)) {
-		console.log(key);
 		menu = fetchAPI(fetchDate);
-		if (!menu.data) {
-			localStorage.setItem(key, JSON.stringify(menu));
+		if (menu.data && menu.data?.Semaines !== undefined) {
+			localStorage.setItem(key, JSON.stringify(menu.data));
 		}
 		menu = menu.data;
 	} else {
-		console.log(key, localStorage.getItem(key));
-		return JSON.parse(localStorage.getItem(key) || "");
+		menu = JSON.parse(localStorage.getItem(key) || "");
+		if (menu.Semaines === undefined) {
+			localStorage.removeItem(key);
+		}
 	}
 
 	let menus = menu?.Semaines.Semaine1.Jours[translateDay[(date || new Date(Date.now())).getDay()]].Menus || {};
