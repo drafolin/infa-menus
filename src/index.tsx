@@ -19,11 +19,9 @@ export default function Index() {
 				{
 					weekend ?
 						<h1>Les menus ne sont pas disponibles le week-end!</h1> :
-						<Suspense fallback={<h1>Récupération des données... Veuillez patienter.</h1>}>
-							<Menu
-								date={date}
-							/>
-						</Suspense>
+						<Menu
+							date={date}
+						/>
 				}
 			</div>
 			<div className="center">

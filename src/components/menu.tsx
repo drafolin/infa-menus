@@ -87,7 +87,7 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
 				}
 			</div>
 		</div>
-		<button onClick={() => {
+		<button className="refresh" onClick={() => {
 			setRefreshing(true);
 			getMenu(true).then(() =>
 				setRefreshing(false));
