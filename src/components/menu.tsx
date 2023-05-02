@@ -31,6 +31,7 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
 	useEffect(() => {
 		setLoading(true);
 		getMenu().then(() => setLoading(false));
+		getMenu(true);
 	}, [props.date]);
 
 	if (loading)
