@@ -14,6 +14,7 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
 	const [menu, setMenu] = useState([] as String[]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
+	const [refreshing, setRefreshing] = useState(false);
 
 	const getMenu = async (force?: boolean) => {
 		let res;
@@ -86,7 +87,13 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
 				}
 			</div>
 		</div>
-		<button onClick={() => getMenu(true)}></button>
+		<button onClick={() => {
+			setRefreshing(true);
+			getMenu(true).then(() =>
+				setRefreshing(false));
+		}}>
+			{refreshing ? "Rafraîchissement..." : "Rafraîchir"}
+		</button>
 	</>;
 };
 
