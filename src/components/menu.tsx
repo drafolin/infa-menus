@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import fetchMenu from "../fetchMenu";
 
-const Menu = (props: { date: Date; }) => {
+export const Menu = (props: { date: Date; }): JSX.Element => {
 	const title = props.date === undefined || (
 		props.date?.getFullYear() === new Date(Date.now()).getFullYear() &&
 		props.date?.getMonth() === new Date(Date.now()).getMonth() &&
@@ -10,52 +11,86 @@ const Menu = (props: { date: Date; }) => {
 
 
 
-	const menu = fetchMenu(props.date);
+	const [menu, setMenu] = useState([] as String[]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<Error | null>(null);
 
-	console.log(menu);
+	const getMenu = async (force?: boolean) => {
+		let res;
+		try {
+			res = await fetchMenu(props.date, force);
+		} catch (e: any) {
+			setError(e);
+			return;
+		}
+
+		setMenu(res);
+	};
+
+	useEffect(() => {
+		setLoading(true);
+		getMenu();
+		setLoading(false);
+	}, [props.date]);
+
+
 	return (
-		<>{menu.length > 0 && (<>
-			<h1>{title}</h1>
-			<div className="flex-horizontal">
-				<div>
-					<h2>Menu fourchette verte</h2>
-					{
-						(() => {
-							try {
-								let result = menu[0]?.split("\n\n");
-								let returnVal = result.map((v, k) => {
-									return <p key={k}>{v}</p>;
-								});
-								return returnVal;
-							} catch (e: any) {
-								console.log(e);
-							}
-						})()
-					}
-				</div>
-				<hr />
-				<div>
-					<h2>Menu Hit</h2>
-					{
-						(() => {
-							try {
-								let result = menu[1]?.split("\n\n");
-								if (!result) {
-									return <></>;
+		loading ?
+			<>
+				<h1>Chargement en cours...</h1>
+			</> :
+			error ?
+				<>
+					<h1>Erreur lors du chargement du menu</h1>
+					<p>{error.toString()}</p>
+					<button onClick={() => getMenu(true)}>Réessayer</button>
+				</> :
+				menu.length === 0 ?
+					<>
+						<h1>Ce menu n'est pas (encore) disponible!</h1>
+					</> :
+					<>
+						<h1>{title}</h1>
+						<div className="flex-horizontal">
+							<div>
+								<h2>Menu fourchette verte</h2>
+								{
+									(() => {
+										try {
+											let result = menu[0]?.split("\n\n");
+											let returnVal = result.map((v, k) => {
+												return <p key={k}>{v}</p>;
+											});
+											return returnVal;
+										} catch (e: any) {
+											console.log(e);
+										}
+									})()
 								}
-								let returnVal = result.map((v, k) => {
-									return <p key={k}>{v}</p>;
-								});
-								return returnVal;
-							} catch (e: any) {
-								console.log(e);
-							}
-						})()
-					}
-				</div>
-			</div>
-		</>)}
-		</>
+							</div>
+							<hr />
+							<div>
+								<h2>Menu Hit</h2>
+								{
+									(() => {
+										try {
+											let result = menu[1]?.split("\n\n");
+											if (!result) {
+												return <></>;
+											}
+											let returnVal = result.map((v, k) => {
+												return <p key={k}>{v}</p>;
+											});
+											return returnVal;
+										} catch (e: any) {
+											console.log(e);
+										}
+									})()
+								}
+							</div>
+						</div>
+						<button onClick={() => getMenu(true)}></button>
+					</>
 	);
 };
 

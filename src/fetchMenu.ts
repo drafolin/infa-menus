@@ -1,6 +1,4 @@
 import dateFormat from "dateformat";
-import useSWR, { SWRResponse } from "swr";
-
 
 // Changes XML to JSON
 function xmlToJson(xml: any) {
@@ -50,24 +48,27 @@ const translateDay = [
 	"Vendredi"
 ];
 
-function fetchMenu(date?: Date): String[] {
+async function fetchMenu(date?: Date, force?: boolean): Promise<String[]> {
 	let fetchDate = new Date(date || new Date(Date.now()));
 	while (fetchDate.getDay() !== 1) {
 		fetchDate.setDate(fetchDate.getDate() - 1);
 	}
 	let key = fetchDate.toDateString().split(" ").join("-");
 	let menu;
-	if (!localStorage.hasOwnProperty(key)) {
-		menu = fetchAPI(fetchDate);
-		if (menu.data && menu.data?.Semaines !== undefined) {
-			localStorage.setItem(key, JSON.stringify(menu.data));
+	if (!localStorage.hasOwnProperty(key) || force) {
+		menu = await fetchAPI(fetchDate);
+		if (menu && menu?.Semaines !== undefined) {
+			localStorage.setItem(key, JSON.stringify(menu));
 		}
-		menu = menu.data;
 	} else {
 		menu = JSON.parse(localStorage.getItem(key) || "");
 		if (menu.Semaines === undefined) {
 			localStorage.removeItem(key);
 		}
+	}
+
+	if (menu?.Semaines === undefined) {
+		return [];
 	}
 
 	let menus = menu?.Semaines.Semaine1.Jours[translateDay[(date || new Date(Date.now())).getDay()]].Menus || {};
@@ -79,14 +80,14 @@ function fetchMenu(date?: Date): String[] {
 
 }
 
-function fetchAPI(): SWRResponse<{ [index: string]: any; }, any>;
-function fetchAPI(date: Date | undefined): SWRResponse<{ [index: string]: any; }, any>;
+function fetchAPI(): Promise<{ [index: string]: any; }>;
+function fetchAPI(date: Date | undefined): Promise<{ [index: string]: any; }>;
 function fetchAPI(dateParam?: Date | undefined) {
 
 	let date = dateParam || new Date(Date.now());
 	const weekend = date.getDay() === 6 || date.getDay() === 0;
 
-	const fetcher = (url: string) => fetch(url)
+	return fetch(import.meta.env.VITE_API_URL + dateFormat(date, "dd.mm.yyyy"))
 		.then(async (res) => {
 			if (weekend) {
 				return [] as String[];
@@ -103,9 +104,6 @@ function fetchAPI(dateParam?: Date | undefined) {
 			const parser = new DOMParser;
 			return xmlToJson(parser.parseFromString(txt, "application/xml"));
 		});
-
-	const swr = useSWR(import.meta.env.VITE_API_URL + dateFormat(date, "dd.mm.yyyy"), fetcher, { suspense: true });
-	return swr;
 };
 
 export default fetchMenu;
