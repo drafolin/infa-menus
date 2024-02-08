@@ -1,100 +1,107 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import fetchMenu from "../fetchMenu";
+import reactLogo from "../assets/reactjs_logo_icon.svg";
+import refreshImage from "../assets/refresh.png";
+import 'react-calendar/dist/Calendar.css';
 
 export const Menu = (props: { date: Date; }): JSX.Element => {
-	const title = props.date === undefined || (
-		props.date?.getFullYear() === new Date(Date.now()).getFullYear() &&
-		props.date?.getMonth() === new Date(Date.now()).getMonth() &&
-		props.date?.getDate() === new Date(Date.now()).getDate()) ?
-		"Au menu du jour:" :
-		`Plat du ${props.date.getDate()}/${props.date.getMonth() + 1}/${props.date.getFullYear()}`;
+    const title = "Menu du jour";
 
 
+    const [menu, setMenu] = useState([] as String[]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    const [refreshing, setRefreshing] = useState(false);
 
-	const [menu, setMenu] = useState([] as String[]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
-	const [refreshing, setRefreshing] = useState(false);
+    const getMenu = async (force?: boolean) => {
+        let res;
+        try {
+            res = await fetchMenu(props.date, force);
+        } catch (e: any) {
+            setError(e);
+            return;
+        }
 
-	const getMenu = async (force?: boolean) => {
-		let res;
-		try {
-			res = await fetchMenu(props.date, force);
-		} catch (e: any) {
-			setError(e);
-			return;
-		}
+        setMenu(res);
+    };
 
-		setMenu(res);
-	};
+    useEffect(() => {
+        setLoading(true);
+        getMenu().then(() => setLoading(false));
+        getMenu(true);
+    }, [props.date]);
 
-	useEffect(() => {
-		setLoading(true);
-		getMenu().then(() => setLoading(false));
-		getMenu(true);
-	}, [props.date]);
+    if (loading)
+        return <h1>Chargement en cours...</h1>;
 
-	if (loading)
-		return <h1>Chargement en cours...</h1>;
+    if (error)
+        return <>
+            <h1>Erreur lors du chargement du menu</h1>
+            <p>{error.toString()}</p>
+            <button onClick={() => getMenu(true)}>Réessayer</button>
+        </>;
 
-	if (error)
-		return <>
-			<h1>Erreur lors du chargement du menu</h1>
-			<p>{error.toString()}</p>
-			<button onClick={() => getMenu(true)}>Réessayer</button>
-		</>;
+    if (menu.length === 0)
+        return <h1>Menu non disponible</h1>;
 
-	if (menu.length === 0)
-		return <h1>Menu non disponible</h1>;
-
-	return <>
-		<h1>{title}</h1>
-		<div className="flex-horizontal">
-			<div>
-				<h2>Menu fourchette verte</h2>
-				{
-					(() => {
-						try {
-							let result = menu[0]?.split("\n\n");
-							let returnVal = result.map((v, k) => {
-								return <p key={k}>{v}</p>;
-							});
-							return returnVal;
-						} catch (e: any) {
-							console.log(e);
-						}
-					})()
-				}
-			</div>
-			<hr />
-			<div>
-				<h2>Menu Hit</h2>
-				{
-					(() => {
-						try {
-							let result = menu[1]?.split("\n\n");
-							if (!result) {
-								return <></>;
-							}
-							let returnVal = result.map((v, k) => {
-								return <p key={k}>{v}</p>;
-							});
-							return returnVal;
-						} catch (e: any) {
-							console.log(e);
-						}
-					})()
-				}
-			</div>
-		</div>
-		<button className="refresh" onClick={() => {
-			setRefreshing(true);
-			getMenu(true).then(() =>
-				setRefreshing(false));
-		}}>
-			{refreshing ? "Rafraîchissement..." : "Rafraîchir"}
-		</button>
-	</>;
+    return <>
+        <div className="titleContent">
+            <h1>{title}</h1>
+            <div>{props.date.toLocaleDateString("fr", {
+                weekday: 'long'
+            })[0].toUpperCase() + props.date.toLocaleDateString("fr", {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            }).slice(1)}
+            </div>
+        </div>
+        <div className="flex-horizontal">
+            <div>
+                <h2>Fourchette verte</h2>
+                {
+                    (() => {
+                        try {
+                            let result = menu[0]?.split("\n\n");
+                            let returnVal = result.map((v, k) => {
+                                return <p key={k}>{v}</p>;
+                            });
+                            return returnVal;
+                        } catch (e: any) {
+                            console.log(e);
+                        }
+                    })()
+                }
+            </div>
+            <div>
+                <h2>Hit</h2>
+                {
+                    (() => {
+                        try {
+                            let result = menu[1]?.split("\n\n");
+                            if (!result) {
+                                return <></>;
+                            }
+                            let returnVal = result.map((v, k) => {
+                                return <p key={k}>{v}</p>;
+                            });
+                            return returnVal;
+                        } catch (e: any) {
+                            console.log(e);
+                        }
+                    })()
+                }
+            </div>
+        </div>
+        <button className="refresh" onClick={() => {
+            setRefreshing(true);
+            getMenu(true).then(() =>
+                setRefreshing(false));
+        }}>
+            <img src={refreshImage} alt="Refresh icon" height={"30px"}/>
+        </button>
+    </>;
 };
 
 export default Menu;
