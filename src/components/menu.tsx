@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import fetchMenu from "../fetchMenu";
 import reactLogo from "../assets/reactjs_logo_icon.svg";
 import refreshImage from "../assets/refresh.png";
@@ -11,9 +11,14 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
     const [menu, setMenu] = useState([] as String[]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
-    const [refreshing, setRefreshing] = useState(false);
+    const [refreshAngle, setRefreshAngle] = useState(0);
 
     const getMenu = async (force?: boolean) => {
+        let angle = refreshAngle;
+        let spinId = setInterval(() => {
+            angle = (angle - 10) % 360;
+            setRefreshAngle(angle)
+        }, 10)
         let res;
         try {
             res = await fetchMenu(props.date, force);
@@ -23,6 +28,7 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
         }
 
         setMenu(res);
+        clearInterval(spinId);
     };
 
     useEffect(() => {
@@ -94,12 +100,17 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
                 }
             </div>
         </div>
-        <button className="refresh" onClick={() => {
-            setRefreshing(true);
-            getMenu(true).then(() =>
-                setRefreshing(false));
-        }}>
-            <img src={refreshImage} alt="Refresh icon" height={"30px"}/>
+        <button className="refresh" onClick={
+            () => {
+                getMenu(true)
+            }
+        }>
+            <img
+              src={refreshImage}
+              alt="Refresh icon"
+              height={"30px"}
+              style = {{transform: `rotate(${refreshAngle}deg)`}}
+            />
         </button>
     </>;
 };
