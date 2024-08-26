@@ -71,7 +71,7 @@ async function fetchMenu(date?: Date, force?: boolean): Promise<String[]> {
 		return [];
 	}
 
-	let menus = menu?.Semaines.Semaine2.Jours[translateDay[(date || new Date(Date.now())).getDay()]].Menus || {};
+	let menus = menu?.Semaines.Semaine1.Jours[translateDay[(date || new Date(Date.now())).getDay()]].Menus || {};
 
 	return [
 		menus.Menu1.CorpsFr["#text"].root as String,
