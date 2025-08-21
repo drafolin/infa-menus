@@ -13,7 +13,7 @@ const Root = () => {
 
 			<footer>
 				<p>Merci à <a href="https://github.com/Tobias-Glauser">Tobias Glauser</a> pour la récupération du lien de l'api</p>
-				<p>&copy; <a href="https://drafolin.ch">Odin Beuchat</a> {new Date().getFullYear()}</p>
+				<p>&copy; <a href="https://drafolin.ch">Odin Beuchat</a> 2022-{new Date().getFullYear()}</p>
 				<p>Hébergé chez
 					<a href="https://vercel.com">
 						<img
