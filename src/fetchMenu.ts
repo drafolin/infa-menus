@@ -28,7 +28,13 @@ async function fetchMenu(date?: Date, force?: boolean): Promise<String[]> {
         menu = JSON.parse(localStorage.getItem(key) || "");
     }
 
-    let menus = menu?.days[translateDay[displayDate.getDay()]].menus;
+    console.log(menu, menu?.days, displayDate, displayDate.getDay(), translateDay[displayDate.getDay()], menu?.days?.[translateDay[displayDate.getDay()]])
+
+    if (!menu?.days || Object.entries(menu.days).length === 0) {
+      throw new Error("Menu non disponible");
+    }
+
+    let menus = menu.days[translateDay[displayDate.getDay()]].menus;
 
     if (!menus) {
         throw new Error("Menu non disponible");

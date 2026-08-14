@@ -9,7 +9,7 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
 
 
     const [menu, setMenu] = useState([] as String[]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [refreshAngle, setRefreshAngle] = useState(0);
 
@@ -24,14 +24,16 @@ export const Menu = (props: { date: Date; }): JSX.Element => {
             res = await fetchMenu(props.date, force);
         } catch (e: any) {
             setError(e);
+            clearInterval(spinId)
             return;
         }
 
         setMenu(res);
-        clearInterval(spinId);
+        clearInterval(spinId)
     };
 
     useEffect(() => {
+        setError(null)
         setLoading(true);
         getMenu().then(() => setLoading(false));
         getMenu(true);
