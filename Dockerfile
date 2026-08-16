@@ -1,6 +1,7 @@
 FROM ghcr.io/pnpm/pnpm:11.21.0 AS builder
 WORKDIR /app
 ENV CI=true
+ENV VITE_API_URL=https://proxy.eldora.derg.ch/
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm runtime set node 24 -g
