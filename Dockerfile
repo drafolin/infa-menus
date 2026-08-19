@@ -3,8 +3,9 @@ WORKDIR /app
 ENV CI=true
 ENV VITE_API_URL=https://proxy.eldora.derg.ch/
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm runtime set node 24 -g
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
